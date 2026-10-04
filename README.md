@@ -111,6 +111,10 @@ Table Prescriptions {
 }
 ```
 
+### Entity-Relationship Diagram (ERD)
+
+![VitalSync Database Architecture](./assets/dbmlVital.png)
+
 ## 5. API Endpoint Contracts & Global Client State Tree
 
 ### RESTful API Endpoint Specifications
