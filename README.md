@@ -182,3 +182,9 @@ To ensure zero technical debt and manageable deliverables, development is divide
 - **Responsive Guidelines:** All interfaces will adopt a mobile-first Tailwind configuration, ensuring fluid layouts before scaling to tablet/desktop breakpoints.
 - **Media & Assets:** Placeholder medical imagery and user avatars will be dynamically sourced from Unsplash using high-quality, professional search queries.
 - **Favicon:** The application utilizes a 100% lightweight, scalable inline SVG favicon configured at the document root to eliminate extra network requests.
+
+### UI/UX Wireframes (Figma)
+
+The low-fidelity DOM wireframes for the core viewports (Authentication, Doctor Console, and Patient EHR) have been mapped to ensure strict layout adherence during the frontend development phase.
+
+- **[View VitalSync Figma Wireframes Here](https://www.figma.com/design/S4T77qVAGEKMaCLpilYL2q/Untitled?node-id=0-1&t=SFZ9mZ8bBscwNHNc-1)**
