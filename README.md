@@ -2,6 +2,8 @@
 
 > Commercial-Grade Electronic Health Record (EHR) and Clinical Management Solution.
 
+**Track Declaration:** Track B (Fullstack Developer) - MERN Stack Focus
+
 ## 1. Executive Summary & Vision
 
 **VitalSync** is an enterprise-grade Electronic Health Record (EHR) and hospital management interface designed to modernize clinical workflows. The platform bridges the gap between patient engagement and medical administration by providing unified, role-based access to medical histories, appointment scheduling, and digital prescriptions.
