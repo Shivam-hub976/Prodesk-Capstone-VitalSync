@@ -64,3 +64,20 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// @desc    Get current user profile
+// @route   GET /api/auth/me
+// @access  Private
+export const getUserProfile = async (req, res) => {
+  try {
+    // req.user was attached by our protect middleware
+    const user = await User.findById(req.user._id).select('-password');
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
