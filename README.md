@@ -4,6 +4,14 @@
 
 **Track Declaration:** Track B (Fullstack Developer) - MERN Stack Focus
 
+## 🔗 Deployment & Repository Links
+
+- **Frontend App (Vercel):** [https://your-app.vercel.app](https://your-app.vercel.app)
+- **Backend API (Render):** [https://your-api.onrender.com](https://your-api.onrender.com)
+- **GitHub Repository:** [https://github.com/your-username/your-repo-name](https://github.com/your-username/your-repo-name)
+
+---
+
 ## 1. Executive Summary & Vision
 
 **VitalSync** is an enterprise-grade Electronic Health Record (EHR) and hospital management interface designed to modernize clinical workflows. The platform bridges the gap between patient engagement and medical administration by providing unified, role-based access to medical histories, appointment scheduling, and digital prescriptions.

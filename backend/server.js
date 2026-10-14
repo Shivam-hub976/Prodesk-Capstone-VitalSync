@@ -6,6 +6,7 @@ import dns from 'dns';
 
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 
 // Force Node to use Google DNS for SRV lookups (bypasses ISP blocking)
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -16,11 +17,33 @@ dotenv.config();
 const app = express();
 
 // Core Middlewares
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173', // Local Vite development
+  'http://localhost:3000', // Alternative local port
+  process.env.FRONTEND_URL // Vercel Production URL (we will set this on Render)
+].filter(Boolean); // Filters out undefined if FRONTEND_URL is not set yet
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or Thunder Client)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `CORS Policy Error: Origin ${origin} is not authorized to access this API.`;
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes); // Protected endpoint test route
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
