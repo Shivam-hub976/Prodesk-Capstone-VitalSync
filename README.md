@@ -6,9 +6,9 @@
 
 ## 🔗 Deployment & Repository Links
 
-- **Frontend App (Vercel):** [https://your-app.vercel.app](https://your-app.vercel.app)
-- **Backend API (Render):** [https://your-api.onrender.com](https://your-api.onrender.com)
-- **GitHub Repository:** [https://github.com/your-username/your-repo-name](https://github.com/your-username/your-repo-name)
+- **Frontend App (Vercel):** [https://vital-sync-clinical.vercel.app/](https://vital-sync-clinical.vercel.app/)
+- **Backend API (Render):** [https://prodesk-capstone-vitalsync-backend.onrender.com](https://prodesk-capstone-vitalsync-backend.onrender.com)
+- **GitHub Repository:** [https://github.com/Shivam-hub976/Prodesk-Capstone-VitalSync](https://github.com/Shivam-hub976/Prodesk-Capstone-VitalSync)
 
 ---
 
