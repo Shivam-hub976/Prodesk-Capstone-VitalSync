@@ -7,6 +7,9 @@ import dns from 'dns';
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import appointmentRoutes from './routes/appointmentRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import ehrRoutes from './routes/ehrRoutes.js';
 
 // Force Node to use Google DNS for SRV lookups (bypasses ISP blocking)
 dns.setServers(['8.8.8.8', '8.8.4.4']);
@@ -44,6 +47,9 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes); // Protected endpoint test route
+app.use('/api/appointments', appointmentRoutes); // Protected endpoint for appointments
+app.use('/api/payments', paymentRoutes); // Protected endpoint for payments
+app.use('/api/ehr', ehrRoutes); // Protected endpoint for EHR operations
 
 // Health Check Route
 app.get('/api/health', (req, res) => {

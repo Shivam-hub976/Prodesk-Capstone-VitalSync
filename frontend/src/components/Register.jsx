@@ -10,6 +10,7 @@ const Register = ({ onSuccess, switchToLogin }) => {
     password: "",
     confirmPassword: "",
     role: "patient",
+    secretKey: "",
   });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +25,6 @@ const Register = ({ onSuccess, switchToLogin }) => {
     e.preventDefault();
     setError("");
 
-    // Password Match Validation
     if (formData.password !== formData.confirmPassword) {
       return setError("Passwords do not match. Please verify.");
     }
@@ -32,7 +32,6 @@ const Register = ({ onSuccess, switchToLogin }) => {
     setLoading(true);
 
     try {
-      // confirmPassword ko API payload se hata kar baaki data bhejna
       const { confirmPassword, ...apiPayload } = formData;
       const user = await register(apiPayload);
       if (onSuccess) onSuccess(user);
@@ -45,7 +44,6 @@ const Register = ({ onSuccess, switchToLogin }) => {
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-slate-100 dark:bg-slate-900">
-      {/* Left Brand Panel */}
       <div className="w-full md:w-1/2 bg-[#0284c7] flex flex-col items-center justify-center p-8 text-white min-h-[30vh] md:min-h-screen">
         <Logo className="w-24 h-24 mb-4 drop-shadow-md" />
         <h1 className="text-4xl font-extrabold tracking-tight">VitalSync</h1>
@@ -54,7 +52,6 @@ const Register = ({ onSuccess, switchToLogin }) => {
         </p>
       </div>
 
-      {/* Right Form Panel */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
         <div className="max-w-md w-full bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
           <div className="text-center mb-6">
@@ -178,6 +175,40 @@ const Register = ({ onSuccess, switchToLogin }) => {
                 <option value="admin">Administrator</option>
               </select>
             </div>
+
+            {(formData.role === "admin" || formData.role === "doctor") && (
+              <div className="space-y-4">
+                <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-4 rounded-r-lg shadow-sm">
+                  <p className="text-xs text-amber-800 dark:text-amber-200 font-semibold leading-relaxed">
+                    ⚠️ Registration for these roles is restricted by the owner.
+                    To request an Authorization Code or to deploy this platform
+                    for your clinic, please contact the owner at{" "}
+                    <a
+                      href="mailto:kumarshivambgs407@gmail.com"
+                      className="text-[#0284c7] hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 font-bold underline transition-colors"
+                    >
+                      kumarshivambgs407@gmail.com
+                    </a>
+                    .
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Authorization Secret Key
+                  </label>
+                  <input
+                    type="password"
+                    name="secretKey"
+                    value={formData.secretKey}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0284c7] transition-all"
+                    placeholder="Enter platform authorization key"
+                  />
+                </div>
+              </div>
+            )}
 
             <button
               type="submit"

@@ -6,7 +6,7 @@
 
 ## 🔗 Deployment & Repository Links
 
-- **Frontend App (Vercel):** [https://vital-sync-clinical.vercel.app/](https://vital-sync-clinical.vercel.app/)
+- **Frontend App (Vercel):** [https://vital-sync-clinical.vercel.app](https://vital-sync-clinical.vercel.app)
 - **Backend API (Render):** [https://prodesk-capstone-vitalsync-backend.onrender.com](https://prodesk-capstone-vitalsync-backend.onrender.com)
 - **GitHub Repository:** [https://github.com/Shivam-hub976/Prodesk-Capstone-VitalSync](https://github.com/Shivam-hub976/Prodesk-Capstone-VitalSync)
 
@@ -22,8 +22,8 @@
 
 - **Lighthouse Performance Score:** 100/100 across Performance, Accessibility, Best Practices, and SEO.
 - **Mobile-First Responsiveness:** Pixel-perfect fluid layouts across mobile (320px+), tablet, and desktop viewports.
-- **State Management:** Zero unnecessary UI re-renders during complex state mutations (e.g., appointment booking, calendar grid updates).
-- **Security & Reliability:** Strict Role-Based Access Control (RBAC) ensuring decoupled state access and route protection for Patients, Doctors, and Admins.
+- **State Management:** Zero unnecessary UI re-renders during complex state mutations (e.g., appointment booking, calendar grid updates) achieved via Zustand.
+- **Security & Reliability:** Strict Role-Based Access Control (RBAC) ensuring decoupled state access and route protection for Patients, Doctors, and Admins. Protected by `.env` injected Authorization Keys for staff onboarding.
 
 ## 2. Role-Based Access Control (RBAC) & User Personas Matrix
 
@@ -33,17 +33,18 @@ VitalSync relies on strict role isolation. The UI and data access layers are com
 
 1. **The Patient:** Seeking medical care. Needs low-friction access to book appointments, view their personal medical history timelines, and download digital prescriptions.
 2. **The Doctor:** Providing clinical care. Needs high-efficiency dashboards to view their daily appointment queue, author clinical notes, and generate prescriptions.
-3. **The Administrator:** Managing hospital operations. Needs oversight of all staff, department scheduling, and platform audit logs.
+3. **The Administrator (Owner):** Managing hospital operations. Needs oversight of all staff, department scheduling, appointment modifications (Date/Time/Reason edits), and platform audit logs.
 
 ### Access Control Matrix
 
 | Feature Module                 |     Patient      |      Doctor      | Administrator |
 | :----------------------------- | :--------------: | :--------------: | :-----------: |
-| **Personal Health Timeline**   |   ✅ View Own    | ✅ View Assigned | ❌ Restricted |
+| **Personal Health Timeline**   |   ✅ View Own    | ✅ View Assigned |  ✅ View All  |
 | **Appointment Booking**        | ✅ Create/Cancel |  ❌ Restricted   | ✅ Manage All |
+| **Appointment Modifications**  |  ❌ Restricted   |  ❌ Restricted   | ✅ Full Edit  |
 | **Doctor Availability Grid**   |   ✅ View Only   |  ✅ Manage Own   | ✅ Manage All |
-| **Clinical Notes & Diagnoses** |  ❌ Restricted   |  ✅ Create/Edit  | ❌ Restricted |
-| **Digital Prescriptions**      | ✅ Download Own  | ✅ Generate/Sign | ❌ Restricted |
+| **Clinical Notes & Diagnoses** |  ❌ Restricted   |  ✅ Create/Edit  |   ✅ Create   |
+| **Digital Prescriptions**      | ✅ Download Own  | ✅ Generate/Sign |  ✅ Generate  |
 | **Staff & Role Management**    |  ❌ Restricted   |  ❌ Restricted   | ✅ Full CRUD  |
 
 ## 3. Tech Stack & Engineering Architecture
@@ -52,21 +53,20 @@ VitalSync is architected using a modern, decoupled web architecture designed for
 
 ### Core Technology Stack
 
-- **Frontend Framework:** Next.js (React 18+, App Router)
+- **Frontend Framework:** React 18+ (Vite)
 - **Styling Architecture:** Tailwind CSS with CSS Variables for dynamic Dark/Light theme toggles
-- **Component Primitives:** Shadcn UI / Radix UI headless primitives
-- **Iconography:** Lucide React (Clean, accessible SVG icon system)
-- **State Management:** Zustand / React Context API (Decoupled store for RBAC state and calendar grid updates)
-- **Data Validation:** Zod (Type-safe schema validation for form inputs and API payloads)
+- **Component Primitives:** Custom Headless UI components with Lucide React Iconography
+- **State Management:** Zustand (Decoupled store for RBAC state and calendar grid updates)
+- **Payment Gateway:** Stripe API Integration (Pro Upgrades via Checkout Sessions)
 - **Backend Runtime:** Node.js & Express.js (RESTful API architecture)
 - **Database & Persistence:** MongoDB Atlas with Mongoose ORM
 - **Deployment Strategy:** Vercel (Frontend Client) & Render (Backend REST API)
 
 ### Architecture Principles
 
-1. **Component Modularization:** Clean separation of concerns with atomic design (`components/ui`, `components/dashboard`, `components/forms`).
-2. **Type Safety & Sanitization:** Strict payload validation using Zod before issuing API network calls.
-3. **Optimized Render Cycles:** Memoized client state and lazy-loaded route views to achieve 100 Lighthouse performance metrics.
+1. **Component Modularization:** Clean separation of concerns with atomic design (`components/auth`, `components/dashboard`).
+2. **Optimistic UI Updates:** UI state mutations (e.g., deleting appointments) execute instantly before backend resolution, ensuring a snappy user experience.
+3. **Enterprise Security Validation:** Use of Authorization Secret Keys during staff (Doctor/Admin) registration to prevent unauthorized privilege escalation.
 
 ## 4. Database Schema & Entity Relationship Diagram (ERD)
 
@@ -74,8 +74,8 @@ The VitalSync database architecture utilizes MongoDB. While NoSQL is document-ba
 
 ### Core Collections
 
-1. **Users:** Stores authentication credentials, profiles, and RBAC roles (Patient, Doctor, Admin).
-2. **Appointments:** Manages the scheduling grid, linking a Patient to a Doctor with status workflows (Scheduled, Completed, Cancelled).
+1. **Users:** Stores authentication credentials, profiles, RBAC roles, System IDs (e.g., PAT-001), and demographic settings.
+2. **Appointments:** Manages the scheduling grid, linking a Patient to a Doctor with status workflows (Pending, Scheduled, Completed, Cancelled).
 3. **MedicalRecords:** The chronological clinical history containing diagnoses and physician notes.
 4. **Prescriptions:** Digital medication orders linked to specific medical records and patients.
 
@@ -85,10 +85,14 @@ The VitalSync database architecture utilizes MongoDB. While NoSQL is document-ba
 Table Users {
   _id ObjectId [pk]
   role String [note: 'patient, doctor, admin']
-  full_name String
+  name String
   email String [unique]
-  password_hash String
+  password String
   phone String
+  age Number
+  bloodGroup String
+  isPro Boolean
+  systemId String [unique]
   created_at Timestamp
 }
 
@@ -97,8 +101,9 @@ Table Appointments {
   patient_id ObjectId [ref: > Users._id]
   doctor_id ObjectId [ref: > Users._id]
   schedule_date Datetime
-  status String [note: 'scheduled, completed, cancelled']
   reason_for_visit String
+  status String [note: 'pending, scheduled, completed, cancelled, rejected']
+  created_at Timestamp
 }
 
 Table MedicalRecords {
@@ -108,6 +113,7 @@ Table MedicalRecords {
   diagnosis String
   clinical_notes Text
   visit_date Datetime
+  created_at Timestamp
 }
 
 Table Prescriptions {
@@ -118,6 +124,7 @@ Table Prescriptions {
   medication_name String
   dosage_instructions String
   status String [note: 'active, dispensed']
+  created_at Timestamp
 }
 ```
 
@@ -131,71 +138,79 @@ Table Prescriptions {
 
 #### Authentication & User Management
 
-- `POST /api/v1/auth/register` — Register a new user (`Patient` or `Doctor`)
-- `POST /api/v1/auth/login` — Authenticate credentials and return JWT token
-- `GET /api/v1/auth/me` — Retrieve currently authenticated user profile
+- `POST /api/auth/register` — Register new user (Staff requires VITALSYNC_SECRET_KEY)
+- `POST /api/auth/login` — Authenticate credentials and return JWT token
+- `GET /api/auth/me` — Retrieve currently authenticated user profile
+- `PUT /api/auth/profile` — Update user profile & settings
+- `GET /api/auth/doctors` — Fetch all doctors (Protected)
+- `GET /api/auth/patients` — Fetch all patients (Admin Protected)
+- `PUT /api/auth/users/:id` — Update any user profile (Admin Protected)
+- `DELETE /api/auth/users/:id` — Delete any user (Admin Protected)
 
 #### Appointments Engine
 
-- `GET /api/v1/appointments` — Fetch list of appointments (filtered by `patient_id` or `doctor_id`)
-- `POST /api/v1/appointments` — Create a new appointment booking
-- `PATCH /api/v1/appointments/:id/status` — Update appointment status (`scheduled`, `completed`, `cancelled`)
+- `GET /api/appointments` — Fetch contextual list of appointments
+- `POST /api/appointments` — Create a new appointment booking (Admin can select target patient)
+- `PATCH /api/appointments/:id/status` — Update appointment state (status, schedule_date, reason)
+- `DELETE /api/appointments/:id` — Cancel/Remove appointment
 
 #### EHR Medical Records & Prescriptions
 
-- `GET /api/v1/medical-records/patient/:patientId` — Retrieve medical history timeline for a patient
-- `POST /api/v1/medical-records` — Author new clinical note and diagnosis (`Doctor` only)
-- `GET /api/v1/prescriptions/patient/:patientId` — Fetch active digital prescriptions
-- `POST /api/v1/prescriptions` — Issue digital prescription linked to a medical record (`Doctor` only)
+- `GET /api/ehr/medical-records/patient/:patientId` — Retrieve medical history
+- `POST /api/ehr/medical-records` — Author new clinical note
+- `GET /api/ehr/prescriptions/patient/:patientId` — Fetch active digital prescriptions
+- `POST /api/ehr/prescriptions` — Issue digital prescription
 
----
+#### Monetization Gateway
+
+- `POST /api/payments/create-checkout-session` — Generate Stripe checkout URL
+- `POST /api/payments/verify` — Validate session and grant isPro status
 
 ### Global Client State Tree (Zustand Store)
 
-To avoid excessive prop-drilling and unnecessary re-renders across dashboard views, client state is organized into four isolated slices:
+To avoid excessive prop-drilling and unnecessary re-renders across dashboard views, client state is organized into isolated slices:
+
+**Plaintext**
 
 ```text
 RootStateStore
-├── authStore
-│   ├── user: { _id, role, full_name, email } | null
-│   ├── token: string | null
-│   ├── isAuthenticated: boolean
-│   ├── login(credentials): Promise<void>
-│   └── logout(): void
+├── themeStore
+│   ├── theme: 'light' | 'dark'
+│   └── toggleTheme(): void
 │
 ├── appointmentStore
 │   ├── appointments: Appointment[]
-│   ├── selectedDate: Date
-│   ├── filterStatus: 'all' | 'scheduled' | 'completed' | 'cancelled'
+│   ├── isLoading: boolean
 │   ├── fetchAppointments(): Promise<void>
-│   └── bookAppointment(payload): Promise<void>
+│   ├── addAppointment(payload): Promise<void>
+│   └── removeAppointment(id): Promise<void> (Features Optimistic Updates)
 │
-├── recordStore
-│   ├── activePatientHistory: MedicalRecord[]
-│   ├── activePrescriptions: Prescription[]
-│   ├── fetchPatientEHR(patientId): Promise<void>
-│   └── addClinicalEntry(payload): Promise<void>
-│
-└── themeStore
-    ├── theme: 'light' | 'dark' | 'system'
-    └── toggleTheme(): void
+└── recordStore
+    ├── activePatientHistory: MedicalRecord[]
+    ├── activePrescriptions: Prescription[]
+    ├── fetchPatientEHR(patientId): Promise<void>
+    ├── addClinicalEntry(payload): Promise<void>
+    └── addPrescription(payload): Promise<void>
 ```
 
 ## 6. Sprint Execution Roadmap
 
 To ensure zero technical debt and manageable deliverables, development is divided across four distinct sprints:
 
-- **Sprint 14 (MVP Foundation):** Initialize Next.js frontend and Node.js backend. Establish MongoDB connection, configure NextAuth/JWT authentication, and build basic RBAC routing.
-- **Sprint 15 (Core CRUD Completion):** Implement the Appointment Engine (booking/canceling), Doctor Dashboard queue, and Patient Health Timeline.
-- **Sprint 16 (Advanced Features & UX Polish):** Integrate the Digital Prescription generator (PDF export capability), wire up global state with Zustand, and finalize Dark/Light mode UI polish.
-- **Sprint 17 (CI/CD & Production Go-Live):** Final Lighthouse optimization audits, environment variable configuration, and deployment to Vercel (Frontend) and Render (Backend).
+- **Sprint 14 (MVP Foundation):** Initialize React (Vite) frontend and Node.js backend. Establish MongoDB connection, configure JWT authentication, and build basic RBAC routing.
+- **Sprint 15 (Core CRUD Completion):** Implement the Appointment Engine, Doctor Dashboard queue, Patient Health Timeline, and Strict Data Ownership checks.
+- **Sprint 16 (Advanced Features & UX Polish):** Integrate Optimistic UI Updates, Admin Management Modules, Authorization Key workflows, Stripe Mock Gateway, and Dark/Light mode UI polish.
+- **Sprint 17 (CI/CD & Production Go-Live):** Final Lighthouse optimization audits, strict environment variable configuration, and deployment to Vercel (Frontend) and Render (Backend).
 
 ## 7. Visual Asset & UI/UX Strategy
 
-- **Design Tooling:** High-fidelity DOM wireframing via Figma mapping at least 3 core viewports (Auth, Patient Dashboard, Doctor Console).
-- **Responsive Guidelines:** All interfaces will adopt a mobile-first Tailwind configuration, ensuring fluid layouts before scaling to tablet/desktop breakpoints.
-- **Media & Assets:** Placeholder medical imagery and user avatars will be dynamically sourced from Unsplash using high-quality, professional search queries.
-- **Favicon:** The application utilizes a 100% lightweight, scalable inline SVG favicon configured at the document root to eliminate extra network requests.
+**Design Tooling:** High-fidelity DOM wireframing via Figma mapping at least 3 core viewports (Auth, Patient Dashboard, Doctor Console).
+
+**Responsive Guidelines:** All interfaces will adopt a mobile-first Tailwind configuration, ensuring fluid layouts before scaling to tablet/desktop breakpoints.
+
+**Media & Assets:** Placeholder medical imagery and user avatars will be dynamically sourced from Unsplash using high-quality, professional search queries.
+
+**Favicon:** The application utilizes a 100% lightweight, scalable inline SVG favicon configured at the document root to eliminate extra network requests.
 
 ### UI/UX Wireframes (Figma)
 

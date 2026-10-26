@@ -29,25 +29,46 @@ const userSchema = new mongoose.Schema(
       enum: ['patient', 'doctor', 'admin'],
       default: 'patient',
     },
+    isPro: {
+      type: Boolean,
+      default: false,
+    },
+    systemId: {
+      type: String,
+      unique: true,
+    },
+    // Additional fields for user profile
+    phone: {
+      type: String,
+      default: '',
+    },
+    age: {
+      type: Number,
+      default: null,
+    },
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown'],
+      default: 'Unknown',
+    },
+    about: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Pre-save hook: Hash password before saving to database (Modern Async Syntax)
 userSchema.pre('save', async function () {
-  // Only hash password if it has been modified or newly created
   if (!this.isModified('password')) {
     return;
   }
-
-  // Await the salt and hash directly without relying on a 'next' callback
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Helper Method: Match user-entered password to hashed password in database
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
