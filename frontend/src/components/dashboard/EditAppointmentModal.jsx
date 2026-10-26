@@ -10,9 +10,18 @@ const EditAppointmentModal = ({ isOpen, onClose, appointment }) => {
   useEffect(() => {
     if (appointment && isOpen) {
       const d = new Date(appointment.schedule_date);
+
+      // fixed the date and time formatting to ensure two digits for month, day, hours, and minutes within local time zone. This ensures that the input fields display the correct values when editing an appointment.
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mins = String(d.getMinutes()).padStart(2, "0");
+
       setFormData({
-        date: d.toISOString().split("T")[0],
-        time: d.toTimeString().slice(0, 5),
+        date: `${yyyy}-${mm}-${dd}`,
+        time: `${hh}:${mins}`,
         reason: appointment.reason_for_visit || "",
       });
     }
