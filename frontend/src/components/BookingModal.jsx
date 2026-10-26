@@ -90,21 +90,36 @@ const BookingModal = ({ isOpen, onClose }) => {
     setError("");
     setLoading(true);
 
-    const result = await addAppointment(formData);
+    try {
+      // FIX: Ensure the date is sent correctly in ISO 8601 without local timezone shifting during transit.
+      // input type="datetime-local" gives us "YYYY-MM-DDTHH:mm", which we forcefully convert to a UTC-friendly Date object.
+      const localDate = new Date(formData.schedule_date);
+      const isoDateString = localDate.toISOString();
 
-    if (result.success) {
-      setFormData({
-        doctor_id: "",
-        schedule_date: "",
-        reason_for_visit: "",
-        patient_id: "",
-      });
-      onClose();
-    } else {
-      setError(result.message || "Failed to book appointment.");
+      // Replace schedule_date in the payload with the safe ISO string
+      const apiPayload = {
+        ...formData,
+        schedule_date: isoDateString,
+      };
+
+      const result = await addAppointment(apiPayload);
+
+      if (result.success) {
+        setFormData({
+          doctor_id: "",
+          schedule_date: "",
+          reason_for_visit: "",
+          patient_id: "",
+        });
+        onClose();
+      } else {
+        setError(result.message || "Failed to book appointment.");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred during booking.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   // Helper: Prevents booking in past time/dates
