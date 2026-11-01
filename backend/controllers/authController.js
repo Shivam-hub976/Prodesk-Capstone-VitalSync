@@ -204,21 +204,22 @@ export const updateUserProfileByAdmin = async (req, res) => {
   try {
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Not authorized' });
 
-    // find the user by ID
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update the user fields with the request body data. This will overwrite existing fields with new values.
+    // Strictly define fields an admin is allowed to modify
+    const allowedUpdates = ['name', 'email', 'phone', 'age', 'bloodGroup', 'about'];
+    
     Object.keys(req.body).forEach((key) => {
-      user[key] = req.body[key];
+      if (allowedUpdates.includes(key)) {
+        user[key] = req.body[key];
+      }
     });
 
-    // Save the updated user to the database
     await user.save();
 
-    // Return the updated user profile without the password field
     const updatedUser = await User.findById(user._id).select('-password');
     res.status(200).json(updatedUser);
   } catch (error) {

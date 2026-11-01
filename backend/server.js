@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dns from 'dns';
+import cron from 'node-cron';
+import Appointment from './models/Appointment.js';
 
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
@@ -54,6 +56,25 @@ app.use('/api/ehr', ehrRoutes); // Protected endpoint for EHR operations
 // Health Check Route
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'VitalSync API is online' });
+});
+
+// Initialize Background Worker (Runs every 15 minutes)
+cron.schedule('*/15 * * * *', async () => {
+  try {
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const result = await Appointment.updateMany(
+      { 
+        schedule_date: { $lt: oneHourAgo }, 
+        status: 'pending' 
+      },
+      { $set: { status: 'cancelled' } }
+    );
+    if (result.modifiedCount > 0) {
+      console.log(`[Cron] Auto-cancelled ${result.modifiedCount} expired pending appointments.`);
+    }
+  } catch (error) {
+    console.error('[Cron] Failed to execute appointment cleanup:', error.message);
+  }
 });
 
 // Database Connection & Server Initialization

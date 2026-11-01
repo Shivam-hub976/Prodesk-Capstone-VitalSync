@@ -40,17 +40,6 @@ export const createAppointment = async (req, res) => {
 // @access  Private
 export const getAppointments = async (req, res) => {
   try {
-    // Only pending appointments older than 1 hour will be marked as 'cancelled' automatically. All other appointments, including 'scheduled', will remain safe and will be marked as Overdue on the frontend.
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-    
-    await Appointment.updateMany(
-      { 
-        schedule_date: { $lt: oneHourAgo }, 
-        status: 'pending' 
-      },
-      { $set: { status: 'cancelled' } }
-    );
-
     let query = {};
     if (req.user.role === 'patient') {
       query.patient_id = req.user._id;
@@ -80,20 +69,32 @@ export const updateAppointmentStatus = async (req, res) => {
       return res.status(404).json({ message: 'Appointment not found' });
     }
 
-    // Existing logic: Update status if provided
-    if (req.body.status) {
+    // 1. Strict Ownership & Role Validation (IDOR Protection)
+    const isOwnerPatient = req.user.role === 'patient' && appointment.patient_id.toString() === req.user._id.toString();
+    const isAssignedDoctor = req.user.role === 'doctor' && appointment.doctor_id.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwnerPatient && !isAssignedDoctor && !isAdmin) {
+      return res.status(403).json({ message: 'Forbidden: Unauthorized access to this record' });
+    }
+
+    // 2. Prevent Patients from bypassing doctor workflows (changing status)
+    if (req.user.role === 'patient' && req.body.status) {
+      return res.status(403).json({ message: 'Forbidden: Patients cannot mutate appointment status' });
+    }
+
+    // 3. Prevent Patients from editing already approved/completed appointments
+    if (req.user.role === 'patient' && appointment.status !== 'pending') {
+      return res.status(403).json({ message: 'Forbidden: Cannot edit an appointment that is already processed' });
+    }
+
+    // Apply safe updates
+    if (req.body.status && req.user.role !== 'patient') {
       appointment.status = req.body.status;
     }
-
-    // Update date/time if provided by Edit Modal
-    if (req.body.schedule_date) {
-      appointment.schedule_date = req.body.schedule_date;
-    }
-
-    // Update reason if provided by Edit Modal
-    if (req.body.reason_for_visit) {
-      appointment.reason_for_visit = req.body.reason_for_visit;
-    }
+    
+    if (req.body.schedule_date) appointment.schedule_date = req.body.schedule_date;
+    if (req.body.reason_for_visit) appointment.reason_for_visit = req.body.reason_for_visit;
 
     const updatedAppointment = await appointment.save();
     res.status(200).json(updatedAppointment);

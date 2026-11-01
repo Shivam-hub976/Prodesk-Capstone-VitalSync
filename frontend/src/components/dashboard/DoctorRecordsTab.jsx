@@ -64,13 +64,18 @@ const DoctorRecordsTab = () => {
       const token = localStorage.getItem("token");
       let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
+
+      // FIX: Strip immutable MongoDB fields before sending to the backend
+      const { _id, systemId, createdAt, updatedAt, __v, ...safePayload } =
+        editForm;
+
       const res = await fetch(`${baseUrl}/auth/users/${editForm._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify(safePayload),
       });
       if (res.ok) {
         setIsModalOpen(false);
