@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import dns from 'dns';
 import cron from 'node-cron';
 import Appointment from './models/Appointment.js';
+import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
@@ -76,6 +77,10 @@ cron.schedule('*/15 * * * *', async () => {
     console.error('[Cron] Failed to execute appointment cleanup:', error.message);
   }
 });
+
+// Mount the error handlers HERE (Must be after all other routes)
+app.use(notFound);
+app.use(errorHandler);
 
 // Database Connection & Server Initialization
 const PORT = process.env.PORT || 5000;

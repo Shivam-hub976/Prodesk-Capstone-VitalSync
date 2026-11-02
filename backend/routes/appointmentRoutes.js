@@ -6,6 +6,8 @@ import {
   updateAppointmentStatus
 } from '../controllers/appointmentController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validateMiddleware.js';
+import { appointmentSchema } from '../validators/schemas.js';
 
 const router = express.Router();
 
@@ -14,7 +16,7 @@ router.use(protect);
 // Chain routing for clean architecture
 router.route('/')
   .get(getAppointments)
-  .post(createAppointment);
+  .post(validate(appointmentSchema), createAppointment);
 
 router.route('/:id')
   .delete(deleteAppointment);

@@ -1,12 +1,14 @@
 import express from 'express';
 import { registerUser, loginUser, getUserProfile, getDoctors, getPatients, updateUserProfile, updateUserProfileByAdmin, deleteUserByAdmin } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validateMiddleware.js';
+import { registerSchema, loginSchema } from '../validators/schemas.js';
 
 const router = express.Router();
 
-// Public Routes
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+// Update the Public Routes to include the validate middleware
+router.post('/register', validate(registerSchema), registerUser);
+router.post('/login', validate(loginSchema), loginUser);
 
 // Protected Routes (Passed through protect middleware first)
 router.get('/me', protect, getUserProfile);
