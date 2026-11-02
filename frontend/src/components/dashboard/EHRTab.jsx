@@ -7,6 +7,7 @@ import {
   X,
   Edit,
   Trash2,
+  Sparkles,
 } from "lucide-react";
 import { useRecordStore } from "../../store/recordStore";
 
@@ -19,6 +20,7 @@ const EHRTab = ({ user }) => {
     addClinicalEntry,
     addPrescription,
   } = useRecordStore();
+
   const [ehrPatients, setEhrPatients] = useState([]);
   const [selectedEhrPatient, setSelectedEhrPatient] = useState("");
 
@@ -33,6 +35,7 @@ const EHRTab = ({ user }) => {
     dosage_instructions: "",
     record_id: null,
   });
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   // Admin Manage Patient State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -82,6 +85,49 @@ const EHRTab = ({ user }) => {
       dosage_instructions: "",
       record_id: null,
     });
+  };
+
+  // Trigger AI Microservice
+  const handleAIEnhance = async () => {
+    if (!noteForm.clinical_notes || noteForm.clinical_notes.trim().length < 5) {
+      alert(
+        "Please enter at least 5 characters of shorthand notes for the AI to enhance.",
+      );
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const token = localStorage.getItem("token");
+      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
+
+      const res = await fetch(`${baseUrl}/ai/enhance-note`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ raw_notes: noteForm.clinical_notes }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // Overwrite the textarea with the AI's professional output
+        setNoteForm((prev) => ({
+          ...prev,
+          clinical_notes: data.enhanced_notes,
+        }));
+      } else {
+        alert(`AI Gateway Error: ${data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error while contacting the AI microservice.");
+    } finally {
+      setIsEnhancing(false);
+    }
   };
 
   // ADMIN ACTION: Update Patient
@@ -337,10 +383,27 @@ const EHRTab = ({ user }) => {
                   className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50 dark:bg-slate-900 dark:text-white"
                 />
               </div>
+
+              {/* UPDATED MEDICAL NOTES BLOCK WITH AI BUTTON */}
               <div>
-                <label className="block text-sm font-semibold mb-1 text-slate-700 dark:text-slate-300">
-                  Notes
-                </label>
+                <div className="flex justify-between items-end mb-1">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Medical Notes
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAIEnhance}
+                    disabled={isEnhancing || !noteForm.clinical_notes}
+                    className="flex items-center gap-1.5 px-2 py-1 text-xs font-bold text-purple-700 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50 rounded-md transition-colors disabled:opacity-50 cursor-pointer shadow-sm border border-purple-200 dark:border-purple-800"
+                  >
+                    {isEnhancing ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <Sparkles size={12} />
+                    )}
+                    {isEnhancing ? "Enhancing..." : "AI Enhance"}
+                  </button>
+                </div>
                 <textarea
                   required
                   rows="4"
@@ -348,9 +411,11 @@ const EHRTab = ({ user }) => {
                   onChange={(e) =>
                     setNoteForm({ ...noteForm, clinical_notes: e.target.value })
                   }
+                  placeholder="Type shorthand notes here..."
                   className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50 dark:bg-slate-900 dark:text-white"
                 />
               </div>
+
               <button
                 type="submit"
                 className="w-full bg-[#0284c7] text-white font-bold py-3 rounded-lg hover:bg-sky-700 cursor-pointer"
