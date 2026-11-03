@@ -3,12 +3,13 @@ import { registerUser, loginUser, getUserProfile, getDoctors, getPatients, updat
 import { protect } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validateMiddleware.js';
 import { registerSchema, loginSchema } from '../validators/schemas.js';
+import { authLimiter } from '../middleware/rateLimitMiddleware.js';
 
 const router = express.Router();
 
 // Update the Public Routes to include the validate middleware
-router.post('/register', validate(registerSchema), registerUser);
-router.post('/login', validate(loginSchema), loginUser);
+router.post('/register', authLimiter, validate(registerSchema), registerUser);
+router.post('/login', authLimiter, validate(loginSchema), loginUser);
 
 // Protected Routes (Passed through protect middleware first)
 router.get('/me', protect, getUserProfile);

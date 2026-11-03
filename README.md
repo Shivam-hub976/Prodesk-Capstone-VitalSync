@@ -58,6 +58,10 @@ VitalSync is architected using a modern, decoupled web architecture designed for
 - **Component Primitives:** Custom Headless UI components with Lucide React Iconography
 - **State Management:** Zustand (Decoupled store for RBAC state and calendar grid updates)
 - **Payment Gateway:** Stripe API Integration (Pro Upgrades via Checkout Sessions)
+- **AI Integration:** Google Gemini SDK (@google/generative-ai)
+- **Security & Validation:** Zod (Schema Validation), Express Rate Limit (DDoS Protection)
+- **Background Workers:** Node-Cron (Automated cleanup)
+- **Monetization:** Stripe API
 - **Backend Runtime:** Node.js & Express.js (RESTful API architecture)
 - **Database & Persistence:** MongoDB Atlas with Mongoose ORM
 - **Deployment Strategy:** Vercel (Frontend Client) & Render (Backend REST API)
@@ -217,3 +221,24 @@ To ensure zero technical debt and manageable deliverables, development is divide
 The low-fidelity DOM wireframes for the core viewports (Authentication, Doctor Console, and Patient EHR) have been mapped to ensure strict layout adherence during the frontend development phase.
 
 - **[View VitalSync Figma Wireframes Here](https://www.figma.com/design/S4T77qVAGEKMaCLpilYL2q/Untitled?node-id=0-1&t=SFZ9mZ8bBscwNHNc-1)**
+
+## 8. Core Enterprise Features
+
+- **Server-Side AI Microservice:** Integrated Gemini 2.5 Flash to automatically rewrite and structure raw clinical notes into professional terminology.
+- **Hardened REST API:** Secured endpoints with Zod payload validation, strict IDOR ownership checks, and IP rate limiting via Express Rate Limit.
+- **Automated Queue Management:** Deployed a background node-cron worker to automatically sweep and cancel expired pending appointments every 15 minutes.
+- **Optimistic UI:** Utilized Zustand to execute zero-latency DOM mutations for appointment cancellations before backend resolution.
+
+## 9. Environment Variables (.env)
+
+To run this project locally, create a `.env` file in the `backend` directory with the following keys. Do not commit this file to version control.
+
+```env
+PORT=5000
+MONGO_URI=<your_mongodb_connection_string>
+JWT_SECRET=<your_secure_jwt_string>
+VITALSYNC_SECRET_KEY=<your_staff_authorization_key>
+STRIPE_SECRET_KEY=<your_stripe_test_key>
+GEMINI_API_KEY=<your_google_gemini_api_key>
+FRONTEND_URL=http://localhost:5173
+```

@@ -106,3 +106,33 @@
 60. How to update a React frontend state and trigger a slide-in success notification toast without forcing a full page reload (`window.location.reload`)?
 61. How to dynamically overwrite the `localStorage` user object after a successful profile update to keep the session in sync?
 62. How to refine UI placeholders and error messages to use enterprise terminology (e.g., changing "Staff Key" to "Platform Access Key")?
+
+# Sprint 16: THE AI INJECTION & POLISH
+
+**--------------------------------------------------------**
+**Backend: Architecture Hardening & Security**
+
+63. How do I install and configure `zod` to architect strict payload validation schemas for authentication and clinical data?
+64. How do I build a dynamic Express validation middleware that parses `req.body` against a Zod schema and forwards errors?
+65. How do I write a global error-handling middleware in Express to intercept server crashes and standardize JSON error responses?
+66. How do I explicitly intercept and handle MongoDB `CastError` (invalid ObjectIds) inside a global error handler to prevent 500 errors?
+67. How do I secure backend `PUT` endpoints by sanitizing payloads to prevent overwriting immutable MongoDB fields like `_id` and `__v`?
+68. How do I configure `express-rate-limit` to apply aggressive throttling to authentication endpoints to mitigate DDoS and token-spam?
+69. How do I securely manage and isolate environment variables (`.env`) for production deployment while maintaining `.gitignore` rules?
+70. How do I execute a production codebase sweep to safely purge development `console.log()` statements while preserving infrastructure monitoring logs?
+71. How do I implement a background worker using `node-cron` to automatically sweep and cancel expired appointments every 15 minutes?
+
+**Backend: Server-Side AI Microservice**
+
+72. How do I install and initialize the official Google Gemini SDK (`@google/generative-ai`) within a Node.js Express controller?
+73. How do I architect a dedicated REST API controller to securely execute LLM calls using the `gemini-2.5-flash` model on the backend?
+74. How do I write a strict system prompt to force the Gemini model to respond exclusively with a valid, parsable JSON object?
+75. How do I safely parse an LLM response string in Node.js, including stripping markdown wrappers, to ensure it returns valid JSON?
+76. How do I mount a new AI route pipeline (`/api/ai`) in Express and protect it strictly with JWT authentication middleware?
+
+**Frontend: AI UI Integration & Optimization**
+
+77. How do I integrate an AI microservice into a React component by triggering an asynchronous fetch request to a protected backend route?
+78. How do I engineer a loading state (`isEnhancing`) with a spinning Lucide React icon (`Loader2`) during an asynchronous LLM request?
+79. How do I handle frontend validation to ensure a user has entered a minimum character count before triggering an AI API call?
+80. How do I smoothly update a React form state (e.g., replacing a textarea value) with the parsed JSON payload returned from the AI microservice?
