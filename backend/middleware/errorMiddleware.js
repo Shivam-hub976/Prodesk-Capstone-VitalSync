@@ -1,13 +1,11 @@
 // backend/middleware/errorMiddleware.js
 
-// Fallback for requests targeting undefined routes
 export const notFound = (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
   res.status(404);
   next(error);
 };
 
-// Global error interceptor
 export const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message;
@@ -18,13 +16,17 @@ export const errorHandler = (err, req, res, next) => {
     message = 'Resource not found: Invalid ID format.';
   }
 
-  // Intercept Zod Schema Validation Errors (Preparing for Step 1.2)
+  // Intercept Zod Schema Validation Errors (FIXED)
   if (err.name === 'ZodError') {
     statusCode = 400;
-    message = err.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+    const validationErrors = err.issues || err.errors || [];
+    message = validationErrors.map(e => {
+      const field = e.path && e.path.length > 0 ? `${e.path.join('.')}: ` : '';
+      return `${field}${e.message}`;
+    }).join(', ');
   }
 
-  // Intercept Mongoose Duplicate Key Error (e.g., registering existing email)
+  // Intercept Mongoose Duplicate Key Error
   if (err.code === 11000) {
     statusCode = 400;
     message = 'Duplicate field value entered.';
