@@ -136,3 +136,9 @@
 78. How do I engineer a loading state (`isEnhancing`) with a spinning Lucide React icon (`Loader2`) during an asynchronous LLM request?
 79. How do I handle frontend validation to ensure a user has entered a minimum character count before triggering an AI API call?
 80. How do I smoothly update a React form state (e.g., replacing a textarea value) with the parsed JSON payload returned from the AI microservice?
+
+# Sprint 17: Deployment & Go Live
+
+**--------------------------------------------------------**
+
+_None_

@@ -19,7 +19,6 @@ export const createMedicalRecord = async (req, res) => {
       visit_date: visit_date || Date.now(),
     });
 
-    // FIX: Save karte hi doctor ka naam populate karo taaki "Unknown" na dikhe
     record = await record.populate('doctor_id', 'name email');
 
     res.status(201).json(record);

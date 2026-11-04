@@ -1,7 +1,6 @@
 // Dynamic API URL for Local Dev & Production Deployment
-let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+let baseUrl = import.meta.env.VITE_API_URL;
 
-// Remove '/auth' if it was accidentally included in the environment variable (from MVP Sprint 14)
 if (baseUrl.endsWith('/auth')) {
   baseUrl = baseUrl.replace('/auth', '');
 }

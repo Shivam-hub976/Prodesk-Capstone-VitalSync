@@ -1,4 +1,3 @@
-// backend/middleware/validateMiddleware.js
 export const validate = (schema) => (req, res, next) => {
   try {
     // Parse forces the request body to match the strict Zod schema

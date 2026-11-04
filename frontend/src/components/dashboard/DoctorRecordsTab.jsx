@@ -21,7 +21,7 @@ const DoctorRecordsTab = () => {
   const fetchDoctors = async () => {
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
       const res = await fetch(`${baseUrl}/auth/doctors`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +46,7 @@ const DoctorRecordsTab = () => {
       return;
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
       const res = await fetch(`${baseUrl}/auth/users/${id}`, {
         method: "DELETE",
@@ -62,10 +62,10 @@ const DoctorRecordsTab = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
 
-      // FIX: Strip immutable MongoDB fields before sending to the backend
+      // Strip immutable MongoDB fields before sending to the backend
       const { _id, systemId, createdAt, updatedAt, __v, ...safePayload } =
         editForm;
 

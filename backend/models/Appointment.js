@@ -22,7 +22,7 @@ const appointmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      // CRITICAL FIX: Added all valid workflow states to avoid validation errors
+      // Added all valid workflow states to avoid validation errors
       enum: ['pending', 'scheduled', 'completed', 'cancelled', 'rejected'],
       default: 'pending',
     },

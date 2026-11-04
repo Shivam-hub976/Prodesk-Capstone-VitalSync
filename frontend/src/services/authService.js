@@ -1,5 +1,5 @@
-// Dynamic API URL for Local Dev & Production Deployment
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/auth';
+// Dynamic API URL for Production Deployment
+const API_URL = import.meta.env.VITE_API_URL;
 
 
 // Register a new user

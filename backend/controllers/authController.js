@@ -177,7 +177,7 @@ export const updateUserProfile = async (req, res) => {
 // @access  Private
 export const getDoctors = async (req, res) => {
   try {
-    // FIX: Removed select limitation so Admin gets full doctor profile (except password)
+    // Removed select limitation so Admin gets full doctor profile (except password)
     const doctors = await User.find({ role: 'doctor' }).select('-password');
     res.status(200).json(doctors);
   } catch (error) {

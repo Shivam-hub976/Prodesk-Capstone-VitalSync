@@ -42,7 +42,7 @@ const EHRTab = ({ user }) => {
   const [editForm, setEditForm] = useState(null);
 
   const fetchPatientsList = async () => {
-    let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    let baseUrl = import.meta.env.VITE_API_URL;
     if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
     const res = await fetch(`${baseUrl}/auth/patients`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -99,7 +99,7 @@ const EHRTab = ({ user }) => {
     setIsEnhancing(true);
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
 
       const res = await fetch(`${baseUrl}/ai/enhance-note`, {
@@ -135,7 +135,7 @@ const EHRTab = ({ user }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
 
       // FIX: Strip immutable MongoDB fields
@@ -169,7 +169,7 @@ const EHRTab = ({ user }) => {
       return;
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
       const res = await fetch(`${baseUrl}/auth/users/${id}`, {
         method: "DELETE",

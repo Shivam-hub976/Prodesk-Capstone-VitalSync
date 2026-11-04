@@ -23,20 +23,18 @@ dotenv.config();
 
 const app = express();
 
-// Core Middlewares
+// Core Middlewares - PRODUCTION HARDENING
 const allowedOrigins = [
-  'http://localhost:5173', // Local Vite development
-  'http://localhost:3000', // Alternative local port
-  process.env.FRONTEND_URL // Vercel Production URL (we will set this on Render)
-].filter(Boolean); // Filters out undefined if FRONTEND_URL is not set yet
+  process.env.FRONTEND_URL // Strictly accepts ONLY the live Vercel URL
+]; 
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or Thunder Client)
-    if (!origin) return callback(null, true);
+    // Allows backend-to-backend tools like Thunder Client/Postman, but strictly filters browser traffic
+    if (!origin) return callback(null, true); 
     
     if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = `CORS Policy Error: Origin ${origin} is not authorized to access this API.`;
+      const msg = `CORS Policy Error: Origin ${origin} is strictly prohibited by production security policies.`;
       return callback(new Error(msg), false);
     }
     return callback(null, true);

@@ -1,5 +1,3 @@
-// backend/middleware/errorMiddleware.js
-
 export const notFound = (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
   res.status(404);
@@ -16,7 +14,7 @@ export const errorHandler = (err, req, res, next) => {
     message = 'Resource not found: Invalid ID format.';
   }
 
-  // Intercept Zod Schema Validation Errors (FIXED)
+  // Intercept Zod Schema Validation Errors 
   if (err.name === 'ZodError') {
     statusCode = 400;
     const validationErrors = err.issues || err.errors || [];

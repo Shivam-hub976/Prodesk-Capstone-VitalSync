@@ -14,7 +14,6 @@ export const createCheckoutSession = async (req, res) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const session = await stripe.checkout.sessions.create({
-      // Removed 'payment_method_types: ['card']' to comply with latest Stripe API
       mode: 'payment',
       line_items: [
         {

@@ -1,5 +1,5 @@
-// Dynamic API URL for Local Dev & Production Deployment
-let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// Dynamic API URL for Production Deployment
+let baseUrl = import.meta.env.VITE_API_URL;
 
 // Strip '/auth' if it exists in the environment variable
 if (baseUrl.endsWith('/auth')) {

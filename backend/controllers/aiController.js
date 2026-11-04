@@ -1,4 +1,3 @@
-// backend/controllers/aiController.js
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // @desc    Enhance raw clinical notes using AI

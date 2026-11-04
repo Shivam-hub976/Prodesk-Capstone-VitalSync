@@ -1,4 +1,3 @@
-// backend/middleware/rateLimitMiddleware.js
 import rateLimit from 'express-rate-limit';
 
 // Strict throttling for Authentication (Login/Register)

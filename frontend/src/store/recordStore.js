@@ -13,7 +13,7 @@ export const useRecordStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith('/auth')) baseUrl = baseUrl.replace('/auth', '');
 
       // Fetch both records and prescriptions concurrently
@@ -48,7 +48,7 @@ export const useRecordStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith('/auth')) baseUrl = baseUrl.replace('/auth', '');
 
       const response = await fetch(`${baseUrl}/ehr/medical-records`, {
@@ -80,7 +80,7 @@ export const useRecordStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const token = localStorage.getItem('token');
-      let baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith('/auth')) baseUrl = baseUrl.replace('/auth', '');
 
       const response = await fetch(`${baseUrl}/ehr/prescriptions`, {

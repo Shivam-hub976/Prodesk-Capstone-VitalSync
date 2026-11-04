@@ -3,7 +3,7 @@ import { X, Loader2 } from "lucide-react";
 import { useAppointmentStore } from "../store/appointmentStore";
 
 const fetchDoctorsList = async () => {
-  let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  let baseUrl = import.meta.env.VITE_API_URL;
   if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
   const token = localStorage.getItem("token");
   const response = await fetch(`${baseUrl}/auth/doctors`, {
@@ -14,7 +14,7 @@ const fetchDoctorsList = async () => {
 };
 
 const fetchPatientsList = async () => {
-  let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+  let baseUrl = import.meta.env.VITE_API_URL;
   if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
   const token = localStorage.getItem("token");
   const response = await fetch(`${baseUrl}/auth/patients`, {
@@ -91,7 +91,7 @@ const BookingModal = ({ isOpen, onClose }) => {
     setLoading(true);
 
     try {
-      // FIX: Ensure the date is sent correctly in ISO 8601 without local timezone shifting during transit.
+      // Ensure the date is sent correctly in ISO 8601 without local timezone shifting during transit.
       // input type="datetime-local" gives us "YYYY-MM-DDTHH:mm", which we forcefully convert to a UTC-friendly Date object.
       const localDate = new Date(formData.schedule_date);
       const isoDateString = localDate.toISOString();

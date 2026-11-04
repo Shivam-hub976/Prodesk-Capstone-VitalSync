@@ -32,7 +32,7 @@ const EditAppointmentModal = ({ isOpen, onClose, appointment }) => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      let baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      let baseUrl = import.meta.env.VITE_API_URL;
       if (baseUrl.endsWith("/auth")) baseUrl = baseUrl.replace("/auth", "");
 
       const newDate = new Date(`${formData.date}T${formData.time}:00`);
