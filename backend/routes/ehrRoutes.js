@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middleware/authMiddleware.js'; // Tumhara auth middleware
+import { protect } from '../middleware/authMiddleware.js'; 
 import {
   createMedicalRecord,
   getMedicalRecordsByPatient,

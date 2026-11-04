@@ -9,7 +9,9 @@ export const createMedicalRecord = async (req, res) => {
       return res.status(403).json({ message: 'Patients cannot author medical records.' });
     }
     const { patient_id, diagnosis, clinical_notes, visit_date } = req.body;
-    const doctor_id = req.user.role === 'admin' ? req.body.doctor_id : req.user._id;
+    
+    // FIX: Fallback to the Admin's own ID if no doctor_id is provided in the request body
+    const doctor_id = req.user.role === 'admin' ? (req.body.doctor_id || req.user._id) : req.user._id;
 
     let record = await MedicalRecord.create({
       patient_id,
@@ -49,7 +51,7 @@ export const getMedicalRecordsByPatient = async (req, res) => {
   }
 };
 
-// @desc    Issue a new digital prescription
+/// @desc    Issue a new digital prescription
 // @route   POST /api/prescriptions
 // @access  Private (Doctor, Admin)
 export const createPrescription = async (req, res) => {
@@ -59,7 +61,9 @@ export const createPrescription = async (req, res) => {
     }
 
     const { patient_id, record_id, medication_name, dosage_instructions } = req.body;
-    const doctor_id = req.user.role === 'admin' ? req.body.doctor_id : req.user._id;
+    
+    // FIX: Fallback to the Admin's own ID if no doctor_id is provided in the request body
+    const doctor_id = req.user.role === 'admin' ? (req.body.doctor_id || req.user._id) : req.user._id;
 
     const prescription = await Prescription.create({
       record_id,
