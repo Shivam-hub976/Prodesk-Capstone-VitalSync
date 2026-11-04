@@ -21,7 +21,8 @@ export const createMedicalRecord = async (req, res) => {
       visit_date: visit_date || Date.now(),
     });
 
-    record = await record.populate('doctor_id', 'name email');
+    // ADDED 'role' here
+    record = await record.populate('doctor_id', 'name email role');
 
     res.status(201).json(record);
   } catch (error) {
@@ -42,7 +43,7 @@ export const getMedicalRecordsByPatient = async (req, res) => {
     }
 
     const records = await MedicalRecord.find({ patient_id: patientId })
-      .populate('doctor_id', 'name email')
+      .populate('doctor_id', 'name email role') // ADDED 'role' here
       .sort({ visit_date: -1 }); // Newest first
 
     res.status(200).json(records);
@@ -51,7 +52,7 @@ export const getMedicalRecordsByPatient = async (req, res) => {
   }
 };
 
-/// @desc    Issue a new digital prescription
+// @desc    Issue a new digital prescription
 // @route   POST /api/prescriptions
 // @access  Private (Doctor, Admin)
 export const createPrescription = async (req, res) => {
@@ -65,13 +66,16 @@ export const createPrescription = async (req, res) => {
     // FIX: Fallback to the Admin's own ID if no doctor_id is provided in the request body
     const doctor_id = req.user.role === 'admin' ? (req.body.doctor_id || req.user._id) : req.user._id;
 
-    const prescription = await Prescription.create({
+    let prescription = await Prescription.create({
       record_id,
       patient_id,
       doctor_id,
       medication_name,
       dosage_instructions,
     });
+
+    // FIX: Populate newly created prescription so frontend doesn't crash on immediate render
+    prescription = await prescription.populate('doctor_id', 'name email role');
 
     res.status(201).json(prescription);
   } catch (error) {
@@ -91,7 +95,7 @@ export const getPrescriptionsByPatient = async (req, res) => {
     }
 
     const prescriptions = await Prescription.find({ patient_id: patientId })
-      .populate('doctor_id', 'name')
+      .populate('doctor_id', 'name email role') // ADDED 'role' here
       .sort({ createdAt: -1 });
 
     res.status(200).json(prescriptions);

@@ -48,6 +48,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// LIVE DEMO LOGGER: Forces Express to print every incoming request to the Render terminal
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes); // Protected endpoint test route

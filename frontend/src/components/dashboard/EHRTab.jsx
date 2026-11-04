@@ -302,10 +302,12 @@ const EHRTab = ({ user }) => {
                         {record.clinical_notes}
                       </p>
                       <p className="text-xs text-slate-400 mt-2">
-                        By{" "}
-                        {record.doctor_id?.name?.startsWith("Dr.")
-                          ? record.doctor_id.name
-                          : `Dr. ${record.doctor_id?.name || "Unknown"}`}
+                        By {/* CONDITIONAL RENDERING FOR DOCTOR vs ADMIN */}
+                        {record.doctor_id?.role === "admin"
+                          ? record.doctor_id?.name || "Admin"
+                          : record.doctor_id?.name?.startsWith("Dr.")
+                            ? record.doctor_id.name
+                            : `Dr. ${record.doctor_id?.name || "Unknown"}`}
                       </p>
                     </div>
                   ))
@@ -346,7 +348,14 @@ const EHRTab = ({ user }) => {
                         {rx.dosage_instructions}
                       </p>
                       <p className="text-xs text-slate-400 mt-2">
-                        Issued: {new Date(rx.createdAt).toLocaleDateString()}
+                        Issued on {new Date(rx.createdAt).toLocaleDateString()}{" "}
+                        by{" "}
+                        {/* CONDITIONAL RENDERING FOR DOCTOR vs ADMIN IN Rx */}
+                        {rx.doctor_id?.role === "admin"
+                          ? rx.doctor_id?.name || "Admin"
+                          : rx.doctor_id?.name?.startsWith("Dr.")
+                            ? rx.doctor_id.name
+                            : `Dr. ${rx.doctor_id?.name || "Unknown"}`}
                       </p>
                     </div>
                   ))
