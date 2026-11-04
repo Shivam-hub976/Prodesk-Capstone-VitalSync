@@ -22,6 +22,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 dotenv.config();
 
 const app = express();
+// Trust Render's reverse proxy (Fixes the express-rate-limit X-Forwarded-For error)
+app.set('trust proxy', 1);
 
 // Core Middlewares - PRODUCTION HARDENING
 const allowedOrigins = [

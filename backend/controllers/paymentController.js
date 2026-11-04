@@ -48,7 +48,11 @@ export const verifyPayment = async (req, res) => {
     const { session_id, mock } = req.body;
 
     if (mock === 'true') {
-      const user = await User.findByIdAndUpdate(req.user._id, { isPro: true }, { new: true }).select('-password');
+      const user = await User.findByIdAndUpdate(
+        req.user._id, 
+        { isPro: true }, 
+        { returnDocument: 'after' }
+      ).select('-password');
       return res.status(200).json({ success: true, user, message: 'Upgraded to Pro (Mock Mode)' });
     }
 
@@ -60,7 +64,11 @@ export const verifyPayment = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
     if (session.payment_status === 'paid') {
-      const user = await User.findByIdAndUpdate(req.user._id, { isPro: true }, { new: true }).select('-password');
+      const user = await User.findByIdAndUpdate(
+        req.user._id, 
+        { isPro: true }, 
+        { returnDocument: 'after' }
+      ).select('-password');
       res.status(200).json({ success: true, user, message: 'Payment verified. Upgraded to Pro!' });
     } else {
       res.status(400).json({ message: 'Payment not completed' });
